@@ -1,56 +1,41 @@
-import re
+import random
+import string
 import streamlit as st
-# page styling
-st.set_page_config(page_title="Password Checker by Rimsha", page_icon="🔒", layout="centered")
-# custom css
-st.markdown(
-    """
-    <style>
-    .main {text-align: center;}
-    .stTextInput {width: 50%; !important;margin: 0 auto;}
-    .stButton button {width: 50%; background-color: #f63366; color: white; font-size: 20px;}
-     .stButton button:hover {background-color: #f63366;}
-    </style>""", unsafe_allow_html=True)
-# page title
-st.title("Password generator")
-st.write("Enter your password to check its strength")
-#  function to check password sterength
-def check_password_strength(password):
-    score = 0
-    feedback = []
-    if len(password) > 8:
-        score += 1
-    else:
-        feedback.append("Password must be at least 8 characters long")
-    if re.search(r"[A-Z]", password) and re.search(r"[a-z]", password):
-        score += 1
-    else:
-        feedback.append("Password must contain both upper and lower case characters")
-    if re.search(r"\d", password):
-        score += 1
-    else:
-        feedback.append("Password must contain at least one digit(0-9)")
-    if re.search(r"[!@#$%^&*]", password):
-        score += 1
-    else:
-        feedback.append("Password must contain at least one special character (!@#$%^&*)")
-        #  display password strength
-    if score == 4:
-        st.success("Password is strong")
-    elif score == 3:
-        st.info("Password is medium")
-    else:
-        st.error("week password❌")
-        #  feedback
-        if feedback:
-            with st.expander("improve your password"):
-                for item in feedback:
-                    st.write(item)
-                    password = st.text_input("Enter your password", type="password",help="Enter your strong password")
 
-                    #button working
-                    if st.button("Check strength"):
-                        if password:
-                            check_password_strength(password)
-                        else:
-                            st.warning("Please enter your password")
+# Page Config
+st.set_page_config(page_title="🔐 Password Generator", page_icon="🔑", layout="centered")
+
+# Custom CSS
+st.markdown("""
+    <style>
+    .stButton button {
+        width: 60%; background-color: #4CAF50; color: white; 
+        font-size: 18px; border-radius: 8px;
+    }
+    .stButton button:hover {background-color: #45a049;}
+    .stTextInput {width: 60%; margin: auto;}
+    </style>
+    """, unsafe_allow_html=True)
+
+# Page Title
+st.title("🔐 Secure Password Generator")
+st.write("Generate a strong password with a mix of letters, numbers, and symbols.")
+
+# Password Generator Function
+def generate_password(length=12):
+    if length < 8:
+        st.warning("⚠ Password should be at least *8 characters* for better security.")
+        return ""
+    
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = "".join(random.choice(characters) for _ in range(length))
+    return password
+
+# User Input for Password Length
+length = st.slider("🔢 Select password length:", min_value=8, max_value=32, value=12)
+
+# Generate Button
+if st.button("🔄 Generate Password"):
+    new_password = generate_password(length)
+    if new_password:
+        st.success(f"🔑 *Generated Password:* {new_password}")
